@@ -1,5 +1,6 @@
 package com.poiji.option;
 
+import com.poiji.ExcelToBean;
 import com.poiji.config.Casting;
 import com.poiji.config.DefaultCasting;
 import com.poiji.exception.PoijiException;
@@ -28,6 +29,7 @@ public final class PoijiOptions {
     private Casting casting;
     private int headerStart;
     private String sheetName;
+    private ExcelToBean mappings;
 
     private PoijiOptions() {
         super();
@@ -36,6 +38,15 @@ public final class PoijiOptions {
     private PoijiOptions setSkip(int skip) {
         this.skip = skip;
         return this;
+    }
+
+    public PoijiOptions setMappings(ExcelToBean mappings) {
+        this.mappings = mappings;
+        return this;
+    }
+
+    public ExcelToBean getMappings() {
+        return this.mappings;
     }
 
     private PoijiOptions setDatePattern(String datePattern) {

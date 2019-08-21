@@ -68,29 +68,29 @@ abstract class HSSFUnmarshaller implements Unmarshaller {
         int requestedIndex = options.sheetIndex();
         Sheet sheet = null;
         if (options.ignoreHiddenSheets()) {
-          for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
-            if (!workbook.isSheetHidden(i) && !workbook.isSheetVeryHidden(i)) {
-              if (options.getSheetName() == null) {
-                if (nonHiddenSheetIndex == requestedIndex) {
-                  return workbook.getSheetAt(i);
+            for (int i = 0; i < workbook.getNumberOfSheets(); i++) {
+                if (!workbook.isSheetHidden(i) && !workbook.isSheetVeryHidden(i)) {
+                    if (options.getSheetName() == null) {
+                        if (nonHiddenSheetIndex == requestedIndex) {
+                            return workbook.getSheetAt(i);
+                        }
+                    } else {
+                        if (workbook.getSheetName(i).equalsIgnoreCase(options.getSheetName())) {
+                            return workbook.getSheetAt(i);
+                        }
+                    }
+                    nonHiddenSheetIndex++;
                 }
-              } else {
-                if (workbook.getSheetName(i).equalsIgnoreCase(options.getSheetName())) {
-                  return workbook.getSheetAt(i);
-                }
-              }
-              nonHiddenSheetIndex++;
             }
-          }
         } else {
-          if (options.getSheetName() == null) {
-            sheet = workbook.getSheetAt(requestedIndex);
-          } else {
-            sheet = workbook.getSheet(options.getSheetName());
-          }
+            if (options.getSheetName() == null) {
+                sheet = workbook.getSheetAt(requestedIndex);
+            } else {
+                sheet = workbook.getSheet(options.getSheetName());
+            }
         }
         return sheet;
-      }
+    }
 
     private void loadColumnTitles(Sheet sheet, int maxPhysicalNumberOfRows) {
         if (maxPhysicalNumberOfRows > 0) {
@@ -141,8 +141,23 @@ abstract class HSSFUnmarshaller implements Unmarshaller {
                 if (titleColumn != null) {
                     constructTypeValue(currentRow, instance, field, titleColumn);
                 }
+            } else {
+                if (options.getMappings() != null) {
+                    constructTypeValue(currentRow, instance, field, getIndex(field));
+                }
             }
         }
+    }
+
+    private int getIndex(Field field) {
+        Object o = options.getMappings().get(field);
+        int index;
+        if (o instanceof Integer) {
+            index = Integer.class.cast(o).intValue();
+        } else {
+            index = titles.get(o.toString());
+        }
+        return index;
     }
 
     private <T> void constructTypeValue(Row currentRow, T instance, Field field, int column) {
